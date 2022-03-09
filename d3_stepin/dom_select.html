@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- <script src="../d3.min.js"></script> -->
+</head>
+<body>
+    <p1>First paragraph</p1>
+    <p>Second paragraph</p>
+    <p>Second paragraph-2</p>
+    <p id="p3">Third paragraph</p>
+
+    <table>
+        <tr>
+            <td>
+                One
+            </td>
+            <td>
+                Two
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Three
+            </td>
+            <td>
+                Four
+            </td>
+        </tr>
+    </table>
+
+    <script>
+    // write your d3 code here.. 
+    d3.select("p1").style("color", "red");
+    d3.selectAll("p").style("color", "green");
+    d3.select("#p3").style("color", "blue");
+    d3.select("tr").selectAll("td").style('background-color','yellow');
+    // select all td within tr
+    </script>
+</body>
+</html>

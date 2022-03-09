@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+    <div>
+        <p>test</p>
+    </div>
+    <div id='div1' style="border:1px solid">
+        <p>First paragraph.</p>
+    </div>
+    <p></p>
+    <script>
+        //add or modify text content of selected elements.
+        d3.select("p").text("This is a paragraph.")
+        //append
+        d3.select("body").append("p1").text("append");
+        d3.select("p1").style("color", "blue");
+        //insert
+        d3.select("#div1").insert("p2").text("Second paragraph.");
+        d3.select("#div1").append("apd1").text("append div1");
+    </script>
+</body>
+</html>
+
