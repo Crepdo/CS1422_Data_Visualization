@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p1>Error: This is error.</p>
+    <p1>Warning:This is warning.</p>
+    <script>
+        
+        var data = [100, 200, 300];
+        var paragraph = d3.select("body")
+                .selectAll("p")
+                .data(data)
+                .text(function (d, i) { // anonymous function
+                    console.log("d: " + d);
+                    console.log("i: " + i);
+                    console.log("this: " + this);
+/*                  the parameter "d" gives you your data element
+                    "i" gives you the index of data in the array and this is a reference of the current DOM element
+                    "this" is a reference of the current DOM element. In this case, it is the paragraph element.  */
+/*                  called .data(data) function above. The data() function provides data to the selected elements
+                    in our case it is data array, see more in: Data Binding */
+                    return d;
+                });
+        // Dynamic Properties:
+        //.style () method applies a color attribute to the selected elements based on the given function's return statement
+        d3.selectAll("p1").style("color", function(d, i) {
+        var text = this.innerText;
+        // data= all{p1} here
+        if (text.indexOf("Error") >= 0) {
+            return "red";
+        } else if (text.indexOf("Warning") >= 0) {
+            return "yellow";
+        }
+    });
+    </script>
+</body>
+</html>

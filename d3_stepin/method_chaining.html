@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <div>
+    </div>
+    <script>
+        //Improves readability:
+        d3.select("body")
+        .append("p")
+        .text("Hello World!");
+        /*Think of it as a filtered channel. The first method filters out content and 
+        provides a reference to the filtered content to the next method, 
+        the next method further filters and passes on the reference to the next method and so on. */
+        var bodyElement = d3.select("body");
+        var paragraph = bodyElement.append("p2");
+        paragraph.text("Hello World!");
+        d3.select("p2").style("color", "blue");
+    </script>
+</body>
+</html>

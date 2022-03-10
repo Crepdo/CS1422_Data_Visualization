@@ -3,6 +3,13 @@
 <head>
     <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
+
+<style>
+    .error {
+        color: red
+    }
+</style>
+
 <body>
     <div>
         <p>test</p>
@@ -10,17 +17,36 @@
     <div id='div1' style="border:1px solid">
         <p>First paragraph.</p>
     </div>
-    <p></p>
+        <p id="rm">"this should be removed"</p>
+        <p id="tg">"this should be replaced"</p>
+        <p id="derror">Error: This is dummy error1.</p>
+        <p id="derror2">Error: This is dummy error2.</p>
+        <p id="derror3">Error: This is dummy error3.</p>
+
+        <p>D3</label><input type="checkbox" />
+        <p>jQuery</label><input type="checkbox" />
     <script>
-        //add or modify text content of selected elements.
+        //add or modify text content of selected elements
         d3.select("p").text("This is a paragraph.")
-        //append
+        //append()
         d3.select("body").append("p1").text("append");
         d3.select("p1").style("color", "blue");
-        //insert
+        //insert()
         d3.select("#div1").insert("p2").text("Second paragraph.");
         d3.select("#div1").append("apd1").text("append div1");
+        //remove()
+        d3.select("#rm").remove();
+        //html()
+        d3.select("tg").html("<span>This is new inner html.</span>");
+        //attr() apply class attributes on the selected DOM elements
+        d3.select("#derror").attr("class","error");
+        //property() attributes of some elements cannot be set by attr() 
+        d3.select("input").property("checked",true);
+        //style() apply style attribute with the specified name and value to the selected elements
+        d3.select("#derror2").style("color", "purple")
+        //classed() set class attribute or modify classList property to the selected elements.
+        d3.select("#derror3").classed('error', true);
+
     </script>
 </body>
 </html>
-
