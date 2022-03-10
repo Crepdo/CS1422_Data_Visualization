@@ -70,8 +70,8 @@ var myColor = d3.scaleSequential()
 // x axis
 var x = d3
     .scaleLinear()
-    .domain([-5, 105])
-    .range([0, width2]);
+    .range([0, width2])
+    .domain([-10, 110]);
     
 svg.append("g")
     .attr("transform", "translate(0," + height2 + ")")
@@ -111,13 +111,12 @@ var yTag = d3
     .range([height2, 0])
     .domain(label_list)
     .paddingInner(1)
-    .paddingOuter(.5)
 
 svg.append("g")
     .attr("class", "xAxis")
     .call(d3.axisLeft(yTag).tickSize(-width2)).select(".domain").remove()
 
-// compute all mean
+// compute all means
 mean_list = []
 for (var i = 0; i < label_list.length; i++) {
     var currentGroup = label_list[i]
@@ -126,29 +125,30 @@ for (var i = 0; i < label_list.length; i++) {
 }
 
 // Compute kernel density estimation for each column:
-const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40)) // 40 for more accurate density
-const allDensity = []
+const kde = KDEstimate(kernelizer(7), x.ticks(50)) // 50 for more accurate density
+const DSet = []
 for (i = 0; i < label_list.length; i++) {
         key = label_list[i]
         density = kde(problyData.map(function(d){  return d[key]; }) )
-        allDensity.push({key: key, density: density})
+        DSet.push({key: key, density: density})
 }
-
-function kernelDensityEstimator(kernel, X) {
+// support functions to do kernelize option
+function KDEstimate(kernel, X) {
     return function(V) {
       return X.map(function(x) {
         return [x, d3.mean(V, function(v) { return kernel(x - v); })];
       });
     };
 }
-function kernelEpanechnikov(k) {
+function kernelizer(k) {
     return function(v) {
       return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
     };
 }
 
+// fill color
 svg.selectAll("areas")
-.data(allDensity)
+.data(DSet)
 .join("path")
   .attr("transform", function(d){return(`translate(0, ${(yTag(d.key)-height2)})` )})
   .attr("fill", function(d){
@@ -158,11 +158,11 @@ svg.selectAll("areas")
     return myColor( value  )
   })
   .datum(function(d){return(d.density)})
-  .attr("opacity", 0.7)
+  .attr("opacity", ".7")
   .attr("stroke", "#000")
-  .attr("stroke-width", 0.1)
-  .attr("d",  d3.line()
-      .curve(d3.curveBasis)
-      .x(function(d) { return x(d[0]); })
-      .y(function(d) { return y(d[1]); })
+  .attr("stroke-width", 2)
+  .attr("d", d3.line()
+    .curve(d3.curveBasis)
+    .x(function (d) { return x(d[0]); })
+    .y(function (d) { return y(d[1]); })
 )

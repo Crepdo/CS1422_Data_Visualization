@@ -7,7 +7,7 @@ const dataset1 = `A couple,A few ,Dozens,A lot,Some,Several,Many,Fractions of,Sc
 2,3,36,10,5,7,20,0.5,400,400
 2,3,36,9,4,3,7,4,8,200
 2,3,50,50,15,10,20,0.5,100,1000
-2,4,36,30,5,8,20,0.2,100,500numberly
+2,4,36,30,5,8,20,0.2,100,500
 2,5,36,16,10,8,25,4,1000,300
 2,4,36,80,3,4,7,0.5,30000,300
 2,6,36,50,4,8,50,0.33,100,200
@@ -65,25 +65,26 @@ var svg = target_canvas
 // color style & range
 var myColor = d3.scaleSequential()
     .interpolator(d3.interpolateViridis)
-    .domain([0,9])
+    .domain([0,10])
 
 // use the char set to represent the superscript
 const superscript = ["⁻²", "⁻¹", "⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
 
 // x axis
 var x = d3
-    .scaleLog()
-    .domain([0.005, 1e5+50000])
-    .range([0, width]);
+    .scaleLinear()
+    .range([0, width])
+    .domain([-2.5, 5.5]);
     
 svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
     .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x)
         .ticks(7)
         .tickFormat(
             function (d) {
                 //console.log(d)
+                d = Math.pow(10, d);
                 var s = superscript[Math.floor(Math.log10(d)) + 2];
                 return "10" + s;
             }
@@ -93,9 +94,9 @@ svg.append("g")
 // x axis title
 svg.append("text")
     .attr("class", "xlabel")
+    .attr("dx", ".75em")
     .attr("x", width*0.7/2)
     .attr("y", height+30)
-    .attr("dx", ".75em")
     .text("Assigned number");
 
 // y axis
@@ -125,6 +126,7 @@ svg.append("text")
     .attr("transform", "rotate(-90)")
     .text("Phrase");
 
+// each tag
 for (var i = 0; i < label_list.length; i++) {
     var currentGroup = label_list[i];
     var data = numberlyData.map(function (d) { return Math.log10(d[currentGroup]); });
@@ -140,12 +142,21 @@ for (var i = 0; i < label_list.length; i++) {
 
     var box_height = 20
 
+    // dots
+    for(var d in data) {
+        svg.append("circle")
+            .attr("cx", x(data[d]))
+            .attr("cy", y(currentGroup) - box_height / 2 + Math.random() * box_height)
+            .attr("r", 4)
+            .style("fill", function(d){ return(myColor(i)) })
+            .style("opacity", 0.3)
+    }
     svg // vertical line
         .append("line")
-        .attr("x1", x(min))
-        .attr("x2", x(max))
         .attr("y1", y(currentGroup))
         .attr("y2", y(currentGroup))
+        .attr("x1", x(min))
+        .attr("x2", x(max))
         .attr("stroke", "black")
     svg // rectangle box
         .append("rect")
@@ -159,17 +170,8 @@ for (var i = 0; i < label_list.length; i++) {
     svg // middle line
         .append("line")
         .attr("x1", x(median))
-        .attr("x2", x(median))
         .attr("y1", y(currentGroup) + box_height / 2)
+        .attr("x2", x(median))
         .attr("y2", y(currentGroup) - box_height / 2)
         .attr("stroke", "black")
-    // dots
-    for(var d in data) {
-        svg.append("circle")
-            .attr("cx", x(data[d]))
-            .attr("cy", y(currentGroup) - box_height / 2 + Math.random() * box_height)
-            .attr("r", 4)
-            .style("fill", function(d){ return(myColor(i)) })
-            .style("opacity", 0.3)
-    }
 }
