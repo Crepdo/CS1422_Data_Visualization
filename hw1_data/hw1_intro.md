@@ -23,9 +23,17 @@ Box plot:
 
 https://www.d3-graph-gallery.com/boxplot.html
 
-Ridgeline chart;
+Ridgeline chart:
 
 https://www.d3-graph-gallery.com/graph/ridgeline_template.html
+
+Axis superscript:
+
+https://stackoverflow.com/questions/19055414/d3-logarithmic-tick-labels-as-powers-of-10
+
+D3 API:
+
+https://mefelixwang.gitbooks.io/d3-v4-api/content/api/ColorSchemes.html#interpolateviridis
 
 https://observablehq.com/@d3/gallery
 
