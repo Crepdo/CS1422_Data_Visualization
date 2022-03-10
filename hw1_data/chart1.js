@@ -1,4 +1,4 @@
-const numberly = `A couple,A few ,Dozens,A lot,Some,Several,Many,Fractions of,Scores of,Hundreds of
+const dataset1 = `A couple,A few ,Dozens,A lot,Some,Several,Many,Fractions of,Scores of,Hundreds of
 2,3,30,20,4,7,12,0.15,80,250
 2,3,24,12,6,10,50,0.5,40,200
 2,5,30,15,5,4,25,0.25,500,500
@@ -7,7 +7,7 @@ const numberly = `A couple,A few ,Dozens,A lot,Some,Several,Many,Fractions of,Sc
 2,3,36,10,5,7,20,0.5,400,400
 2,3,36,9,4,3,7,4,8,200
 2,3,50,50,15,10,20,0.5,100,1000
-2,4,36,30,5,8,20,0.2,100,500
+2,4,36,30,5,8,20,0.2,100,500numberly
 2,5,36,16,10,8,25,4,1000,300
 2,4,36,80,3,4,7,0.5,30000,300
 2,6,36,50,4,8,50,0.33,100,200
@@ -45,30 +45,37 @@ const numberly = `A couple,A few ,Dozens,A lot,Some,Several,Many,Fractions of,Sc
 2,3,60,7,3,7,5,0.1,80,300
 2,3,120,12,3,5,25,0.1,80,300
 2,4,36,20,7,5,80,100,500,500`
-var numberlyData = d3.csvParse(numberly);
-var canvas1 = d3.select("#chart1");
-var margin = { top: 10, right: 30, bottom: 30, left: 100 };
+
+// canvas layout
+var numberlyData = d3.csvParse(dataset1);
+var target_canvas = d3.select("#chart1");
+var margin = { top: 10, right: 100, bottom: 50, left: 100 };
+
 const width = 800 - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
-var svg = canvas1
+
+var svg = target_canvas
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+    // with this convention, all subsequent code can ignore margins
 
+// color style & range
+var myColor = d3.scaleSequential()
+    .interpolator(d3.interpolateViridis)
+    .domain([0,9])
 
-
-key_list = [];
-for (var k in numberlyData[0]) {
-    key_list.push(k);
-};
+// use the char set to represent the superscript
 const superscript = ["⁻²", "⁻¹", "⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+
+// x axis
 var x = d3
     .scaleLog()
     .domain([0.005, 1e5+50000])
     .range([0, width]);
+    
 svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .attr("class", "xAxis")
@@ -76,63 +83,92 @@ svg.append("g")
         .ticks(7)
         .tickFormat(
             function (d) {
+                //console.log(d)
                 var s = superscript[Math.floor(Math.log10(d)) + 2];
                 return "10" + s;
             }
         ).tickSize(-height)
     ).select(".domain").remove();
+
+// x axis title
+svg.append("text")
+    .attr("class", "xlabel")
+    .attr("x", width*0.7/2)
+    .attr("y", height+30)
+    .attr("dx", ".75em")
+    .text("Assigned number");
+
+// y axis
+
+// y labels
+label_list = [];
+for (var k in numberlyData[0]) { label_list.push(k);};
+
 var y = d3
     .scaleBand()
     .range([height, 0])
-    .domain(key_list)
+    .domain(label_list)
     .paddingInner(1)
     .paddingOuter(.5)
+
 svg.append("g")
-.attr("class", "xAxis")
-.call(d3.axisLeft(y).tickSize(-width)).select(".domain").remove()
-for (var i = 0; i < key_list.length; i++) {
-    var key = key_list[i];
-    var data = numberlyData.map(function (d) { return d[key]; });
+    .attr("class", "xAxis")
+    .call(d3.axisLeft(y).tickSize(-width)).select(".domain").remove()
+
+// y axis title
+svg.append("text")
+    .attr("class", "ylabel")
+    .attr("text-anchor", "end")
+    .attr("x", -height/2)
+    .attr("y", -80)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Phrase");
+
+for (var i = 0; i < label_list.length; i++) {
+    var currentGroup = label_list[i];
+    var data = numberlyData.map(function (d) { return Math.log10(d[currentGroup]); });
     var data_sorted = data.sort(d3.ascending);
+
     var q1 = d3.quantile(data_sorted, .25);
     var median = d3.quantile(data_sorted, .5);
     var q3 = d3.quantile(data_sorted, .75);
-    var interQuantileRange = q3 - q1;
-    var min = Math.max(q1 - 1.5 * interQuantileRange, 1e-2);
-    var max = Math.max(q3 + 1.5 * interQuantileRange, 1e-2);
+    var MediumQRange = (q3 - q1);
+    
+    var min = q1 - 1.5 * MediumQRange;
+    var max = q3 + 1.5 * MediumQRange;
 
-    var center = 200
     var box_height = 20
 
-    svg
+    svg // vertical line
         .append("line")
         .attr("x1", x(min))
         .attr("x2", x(max))
-        .attr("y1", y(key))
-        .attr("y2", y(key))
+        .attr("y1", y(currentGroup))
+        .attr("y2", y(currentGroup))
         .attr("stroke", "black")
-    svg
+    svg // rectangle box
         .append("rect")
         .attr("x", x(q1))
-        .attr("y", y(key) - box_height / 2)
+        .attr("y", y(currentGroup) - box_height / 2)
         .attr("height", box_height)
         .attr("width", (x(q3) - x(q1)))
         .attr("stroke", "black")
         .style("fill", "#69b3a2")
         .style("fill", function(d){ return(myColor(i)) })
-    svg
+    svg // middle line
         .append("line")
         .attr("x1", x(median))
         .attr("x2", x(median))
-        .attr("y1", y(key) + box_height / 2)
-        .attr("y2", y(key) - box_height / 2)
+        .attr("y1", y(currentGroup) + box_height / 2)
+        .attr("y2", y(currentGroup) - box_height / 2)
         .attr("stroke", "black")
+    // dots
     for(var d in data) {
-        console.log(data[d]);
         svg.append("circle")
-            .attr("r", 2)
             .attr("cx", x(data[d]))
-            .attr("cy", y(key) - box_height / 2 + Math.random() * box_height)
+            .attr("cy", y(currentGroup) - box_height / 2 + Math.random() * box_height)
+            .attr("r", 4)
             .style("fill", function(d){ return(myColor(i)) })
             .style("opacity", 0.3)
     }
