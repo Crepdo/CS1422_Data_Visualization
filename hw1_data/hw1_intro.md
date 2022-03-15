@@ -43,3 +43,8 @@ HTML:
 
 https://developer.mozilla.org/en-US/docs/Web/HTML
 
+### Outcomes
+
+![image-20220315234806743](hw1_intro.assets/image-20220315234806743.png)
+
+![image-20220315234739948](hw1_intro.assets/image-20220315234739948.png)
