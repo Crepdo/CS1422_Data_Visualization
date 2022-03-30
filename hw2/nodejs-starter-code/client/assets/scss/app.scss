@@ -1,0 +1,17 @@
+@import 'colors';
+
+.canvas {
+  font: 10px sans-serif;
+  background-color: $bgcolor;
+  width: 800px;
+  height: 800px;
+}
+
+.dot {
+  fill: $color;
+  stroke: black;
+}
+
+#webpack-img {
+  width: 50px;
+}
